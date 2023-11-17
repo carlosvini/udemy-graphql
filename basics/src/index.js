@@ -6,6 +6,9 @@ import { comments, posts, users } from "./data.js";
 
 import Query from "./resolvers/Query.js";
 import Mutation from "./resolvers/Mutation.js";
+import Post from "./resolvers/Post.js";
+import Comment from "./resolvers/Comment.js";
+import User from "./resolvers/User.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const typeDefs = fs.readFileSync(`${__dirname}/schema.graphql`, "utf8");
@@ -13,31 +16,9 @@ const typeDefs = fs.readFileSync(`${__dirname}/schema.graphql`, "utf8");
 const resolvers = {
   Query,
   Mutation,
-  Post: {
-    author: (parent, args, ctx, info) =>
-      users.find((user) => user.id === parent.author),
-    comments: (parent) =>
-      comments.filter((comment) => comment.post === parent.id),
-  },
-  Comment: {
-    author: (parent, args, ctx, info) =>
-      users.find(
-        (user) =>
-          user.id === posts.find((post) => post.id === parent.post).author
-      ),
-    post: (parent, args, ctx, info) =>
-      posts.find((post) => post.id === parent.post),
-  },
-  User: {
-    posts: (parent, args, ctx, info) =>
-      posts.filter((post) => post.author === parent.id),
-    comments: (parent) => {
-      const authorPostIds = posts
-        .filter((post) => post.author === parent.id)
-        .map((post) => post.id);
-      return comments.filter((comment) => authorPostIds.includes(comment.post));
-    },
-  },
+  Post,
+  Comment,
+  User,
 };
 
 const yoga = createYoga({
